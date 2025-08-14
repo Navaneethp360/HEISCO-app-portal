@@ -258,53 +258,72 @@ main#folders-container { margin-top: 220px; }
   width: 100%;
   display: block;
 }
+/* Floating login container */
 .floating-login {
   position: fixed;
   top: 20px;
   right: 20px;
-  width: 220px;
+  width: 230px;
   padding: 18px 20px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(14px) saturate(150%);
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.18);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   z-index: 20;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   font-family: "SF Pro Display", sans-serif;
 }
 
-/* Inputs */
-.floating-login input {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.3);
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-  font-size: 0.9rem;
-  outline: none;
-  transition: all 0.2s ease;
-  margin-bottom: 10px;
-}
-
-.floating-login input::placeholder {
-  color: rgba(255,255,255,0.6);
-}
-
-.floating-login input:focus {
-  border-color: rgba(255,255,255,0.6);
-  background: rgba(255,255,255,0.15);
-}
-.floating-login .login-header {
+/* Heading */
+.floating-login h3 {
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   text-align: center;
   color: #fff;
   margin-bottom: 12px;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+/* Text & password inputs */
+.floating-login input[type="text"],
+.floating-login input[type="password"] {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.floating-login input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.floating-login input:focus {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Remember me checkbox */
+.floating-login label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.floating-login input[type="checkbox"] {
+  accent-color: #2e7d32; /* dark green */
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
 }
 
 /* Button */
@@ -313,7 +332,7 @@ main#folders-container { margin-top: 220px; }
   padding: 8px 0;
   border-radius: 12px;
   border: none;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   color: #fff;
   font-weight: 600;
   cursor: pointer;
@@ -321,8 +340,9 @@ main#folders-container { margin-top: 220px; }
 }
 
 .floating-login button:hover {
-  background: rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.25);
 }
+
 /* Responsive */
 @media (max-width:760px){
   #folders-container { grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); }
@@ -351,13 +371,18 @@ main#folders-container { margin-top: 220px; }
 </header>
 
 <div class="floating-login">
-  <div class="login-header">Single Sign-In for PMMS and Non-ERP Apps</div>
   <form id="floatingLoginForm">
+    <h3>Single Sign-In for Non-ERP Apps</h3>
     <input type="text" id="loginUsername" placeholder="Username" required />
     <input type="password" id="loginPassword" placeholder="Password" required />
+    <label style="display:flex;align-items:center;gap:5px;font-size:0.9rem;margin-top:5px;">
+      <input type="checkbox" id="rememberMe"> Remember Password
+    </label>
     <button type="submit">Login</button>
   </form>
 </div>
+
+
 
 
 <main role="main" id="folders-container" aria-label="Company folders and applications">
@@ -550,7 +575,7 @@ main#folders-container { margin-top: 220px; }
     <span>Salary Certificate Request</span>
   </a>
 
-  <a href="http://ess.heisco.com/trf/" target="_blank" rel="noopener noreferrer" class="app" aria-label="TRF application">
+  <a href="http://pmms03/trf/login.aspx" target="_blank" rel="noopener noreferrer" class="app" aria-label="TRF application">
     <img src="icons/trf.png" alt="TRF icon" class="app-icon" />
     <span>Training Request Form</span>
   </a>
@@ -562,55 +587,89 @@ main#folders-container { margin-top: 220px; }
 
 </section>
 
-
 <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const folders = document.querySelectorAll('.folder');
-    const apps = document.querySelectorAll('#non-erp a.app');
-    const elements = [...folders, ...apps];
-    elements.forEach(el => el.classList.add('fade-slide-up'));
-    elements.forEach((el, i) => {
-      setTimeout(() => { el.classList.add('visible'); }, i * 150);
-    });
+document.addEventListener('DOMContentLoaded', () => {
+  // Animation
+  const folders = document.querySelectorAll('.folder');
+  const apps = document.querySelectorAll('#non-erp a.app');
+  const elements = [...folders, ...apps];
+  elements.forEach(el => el.classList.add('fade-slide-up'));
+  elements.forEach((el, i) => {
+    setTimeout(() => { el.classList.add('visible'); }, i * 150);
   });
 
   const loginForm = document.getElementById('floatingLoginForm');
-  let storedUsername = '';
-  let storedPassword = '';
+  const usernameInput = document.getElementById('loginUsername');
+  const passwordInput = document.getElementById('loginPassword');
+  const rememberCheckbox = document.getElementById('rememberMe');
 
-  loginForm.addEventListener('submit', function(e) {
+  // Load saved credentials from cookies
+  const savedUsername = getCookie('savedUsername');
+  const savedPassword = getCookie('savedPassword');
+  if (savedUsername && savedPassword) {
+    usernameInput.value = savedUsername;
+    passwordInput.value = savedPassword;
+    rememberCheckbox.checked = true;
+  }
+
+  // Save on submit
+  loginForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    storedUsername = document.getElementById('loginUsername').value.trim();
-    storedPassword = document.getElementById('loginPassword').value.trim();
 
-    // Show a small confirmation message
+    const storedUsername = usernameInput.value.trim();
+    const storedPassword = passwordInput.value.trim();
+
+    if (rememberCheckbox.checked) {
+      setCookie('savedUsername', storedUsername, 30);
+      setCookie('savedPassword', storedPassword, 30);
+    } else {
+      deleteCookie('savedUsername');
+      deleteCookie('savedPassword');
+    }
+
     let msg = document.createElement('div');
     msg.textContent = 'Credentials saved!';
-    msg.style.color = '#2e7d32'; 
+    msg.style.color = '#1b5e20';
     msg.style.fontSize = '0.85rem';
     msg.style.textAlign = 'center';
     msg.style.marginTop = '6px';
     loginForm.appendChild(msg);
 
-    // Remove message after 5 seconds
     setTimeout(() => msg.remove(), 5000);
   });
 
-  // Append credentials on click if present
+  // Append credentials to link
   const appLinks = document.querySelectorAll('a.app, .folder-app');
   appLinks.forEach(link => {
-    link.addEventListener('click', function(e){
-      if(storedUsername && storedPassword){
-        // Build safe URL with query params
-        let href = link.href;
-        // Check if URL already has query parameters
-        const separator = href.includes('?') ? '&' : '?';
-        link.href = `${href}${separator}user=${encodeURIComponent(storedUsername)}&pass=${encodeURIComponent(storedPassword)}`;
+    link.addEventListener('click', function () {
+      const user = usernameInput.value.trim();
+      const pass = passwordInput.value.trim();
+      if (user && pass) {
+        const separator = link.href.includes('?') ? '&' : '?';
+        link.href = `${link.href}${separator}user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`;
       }
-      // otherwise do nothing, opens normally
     });
   });
+
+  // Cookie helpers
+  function setCookie(name, value, days) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+  }
+
+  function getCookie(name) {
+    return document.cookie.split('; ').reduce((r, v) => {
+      const parts = v.split('=');
+      return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+    }, '');
+  }
+
+  function deleteCookie(name) {
+    setCookie(name, '', -1);
+  }
+});
 </script>
+
 
 </body>
 </html>
