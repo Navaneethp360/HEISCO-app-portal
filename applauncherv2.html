@@ -258,7 +258,71 @@ main#folders-container { margin-top: 220px; }
   width: 100%;
   display: block;
 }
+.floating-login {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 220px;
+  padding: 18px 20px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(14px) saturate(150%);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: "SF Pro Display", sans-serif;
+}
 
+/* Inputs */
+.floating-login input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s ease;
+  margin-bottom: 10px;
+}
+
+.floating-login input::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+.floating-login input:focus {
+  border-color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.15);
+}
+.floating-login .login-header {
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 12px;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+}
+
+/* Button */
+.floating-login button {
+  width: 100%;
+  padding: 8px 0;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.floating-login button:hover {
+  background: rgba(255,255,255,0.25);
+}
 /* Responsive */
 @media (max-width:760px){
   #folders-container { grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); }
@@ -285,6 +349,16 @@ main#folders-container { margin-top: 220px; }
     <p>All your favourite applications in one place</p>
   </div>
 </header>
+
+<div class="floating-login">
+  <div class="login-header">Single Sign-In for PMMS and Non-ERP Apps</div>
+  <form id="floatingLoginForm">
+    <input type="text" id="loginUsername" placeholder="Username" required />
+    <input type="password" id="loginPassword" placeholder="Password" required />
+    <button type="submit">Login</button>
+  </form>
+</div>
+
 
 <main role="main" id="folders-container" aria-label="Company folders and applications">
  
@@ -497,6 +571,43 @@ main#folders-container { margin-top: 220px; }
     elements.forEach(el => el.classList.add('fade-slide-up'));
     elements.forEach((el, i) => {
       setTimeout(() => { el.classList.add('visible'); }, i * 150);
+    });
+  });
+
+  const loginForm = document.getElementById('floatingLoginForm');
+  let storedUsername = '';
+  let storedPassword = '';
+
+  loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    storedUsername = document.getElementById('loginUsername').value.trim();
+    storedPassword = document.getElementById('loginPassword').value.trim();
+
+    // Show a small confirmation message
+    let msg = document.createElement('div');
+    msg.textContent = 'Credentials saved!';
+    msg.style.color = '#2e7d32'; 
+    msg.style.fontSize = '0.85rem';
+    msg.style.textAlign = 'center';
+    msg.style.marginTop = '6px';
+    loginForm.appendChild(msg);
+
+    // Remove message after 5 seconds
+    setTimeout(() => msg.remove(), 5000);
+  });
+
+  // Append credentials on click if present
+  const appLinks = document.querySelectorAll('a.app, .folder-app');
+  appLinks.forEach(link => {
+    link.addEventListener('click', function(e){
+      if(storedUsername && storedPassword){
+        // Build safe URL with query params
+        let href = link.href;
+        // Check if URL already has query parameters
+        const separator = href.includes('?') ? '&' : '?';
+        link.href = `${href}${separator}user=${encodeURIComponent(storedUsername)}&pass=${encodeURIComponent(storedPassword)}`;
+      }
+      // otherwise do nothing, opens normally
     });
   });
 </script>
