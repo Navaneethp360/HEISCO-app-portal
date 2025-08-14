@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Unified Application Portal</title>
+
+<style>
+
+ @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;900&display=swap');
+
+/* Fade in and slide up animation */
+.fade-slide-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-slide-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* Reset */
+
+* { box-sizing: border-box; }
+
+html, body {
+
+  margin: 0;
+
+  padding: 0;
+
+  height: 100%;
+
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+
+  background: none;
+
+  color: #ffffff;
+
+  user-select: none;
+
+  overflow: hidden;
+
+}
+
+
+
+/* Background carousel container */
+
+#background-carousel {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: -1;
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+}
+
+.bg-slide {
+
+  position: absolute;
+
+  inset: 0;
+
+  background-size: cover;
+
+  background-position: center;
+
+  filter: blur(3px) brightness(0.85);
+
+  opacity: 0;
+
+  transition: opacity 1.5s ease-in-out;
+
+}
+
+.bg-slide.active { opacity: 1; }
+
+
+
+/* Center content */
+
+body {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 40px 30px;
+
+}
+
+
+
+/* Header logo wrapper (glass) */
+
+.header-logo-wrapper {
+
+  position: fixed;
+
+  top: 12px;
+
+  left: 0px;                 /* leftmost corner */
+
+  padding: 12px;
+
+  background: rgba(255,255,255,0.08);
+
+  backdrop-filter: blur(14px) saturate(150%);
+
+  border-radius: 24px;
+
+  border: 1px solid rgba(255,255,255,0.18);
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+
+  z-index: 15;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  height: 140px;             /* bigger logo frame */
+
+  box-sizing: content-box;
+
+}
+
+.header-logo {
+
+  height: 100%;
+
+  width: auto;
+
+  display: block;
+
+  border-radius: 8px;
+
+}
+
+
+
+/* Center header content */
+
+header {
+
+  position: fixed;
+
+  top: 12px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 95vw;
+
+  padding: 15px 20px;
+
+  text-align: center;
+
+  z-index: 10;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+}
+
+header h1 {
+
+  font-weight: 900;
+
+  font-size: 3rem;
+
+  margin: 0;
+
+  color:white;
+
+  text-shadow: 0 1px 1px rgba(255,255,255,0.15);
+
+}
+
+header p {
+
+  margin: 0;
+
+  color: white;
+
+  text-shadow: 0 1px 1px rgba(255,255,255,0.1);
+
+  font-size: 1.25rem;
+
+}
+
+
+.folder-icon { margin-bottom: 8px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25)); }
+
+.folder-app-icon { width: 28px; height: 28px; margin-bottom: 6px; }
+
+/* Folder container */
+#folders-container {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Glass folder card */
+.folder {
+  perspective: 800px; 
+  width: 240px;
+  padding: 18px 14px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(26px) saturate(150%);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform .25s ease, box-shadow .25s ease;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  will-change: transform;
+}
+
+.folder:hover {
+  transform: translateY(-12px) rotateX(10deg) rotateY(20deg);
+  box-shadow: 0 16px 30px rgba(0,0,0,0.3);
+}
+
+/* Folder label */
+.folder-label {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #fff;
+  margin: 10px 0 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%;
+  text-align: center;
+}
+
+/* app buttons */
+.folder-apps { 
+  display: flex; 
+  justify-content: center; 
+  gap: 16px; 
+}
+
+.folder-app {
+  width: 64px; 
+  height: 64px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(12px) saturate(180%);
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center;
+  color: #fff; 
+  font-weight: 600; 
+  font-size: .85rem; 
+  text-decoration: none; 
+  cursor: pointer;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.folder-app:hover { 
+  transform: scale(1.12); 
+  box-shadow: 0 12px 30px rgba(0,0,0,0.4); 
+}
+
+/* ensure main content sits below header */
+main#folders-container { margin-top: 180px; }
+
+/* Non-ERP section */
+#non-erp { 
+  margin-top: 40px; 
+  max-width: 980px; 
+  width: 100%; 
+  display: flex; 
+  gap: 28px; 
+  justify-content: center; 
+  flex-wrap: wrap; 
+}
+
+#non-erp > .section-title { 
+  flex-basis: 100%; 
+  text-align: center; 
+  font-weight: 900; 
+  font-size: 1.7rem; 
+  color: white; 
+  text-shadow: 0 1px 1px rgba(255,255,255,0.15); 
+}
+
+#non-erp a.app {
+  width: 95px;
+  height: 120px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(14px) saturate(180%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transform-style: preserve-3d;
+  perspective: 800px;  /* same as folder */
+  will-change: transform;
+}
+
+#non-erp a.app:hover {
+  transform: translateY(-12px) rotateX(10deg) rotateY(20deg);
+  box-shadow: 0 16px 30px rgba(0,0,0,0.3);
+}
+
+
+/* changed from svg fill to img size */
+#non-erp .app-icon {
+  width: 36px;
+  height: 36px;
+  margin-bottom: 6px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+}
+
+#non-erp a.app span {
+  text-align: center;
+  width: 100%;
+  display: block;
+}
+
+/* Responsive */
+
+@media (max-width:760px){
+
+  #folders-container { grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); }
+
+  .folder { width:140px; }
+
+  header h1 { font-size: 2.4rem; }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<!-- Background carousel container -->
+
+<div id="background-carousel"></div>
+
+
+
+<header role="banner">
+
+  <div class="header-logo-wrapper" aria-hidden="true">
+
+    <img src="HEISCO.png" alt="Heico Logo" class="header-logo" />
+
+  </div>
+
+
+
+  <div class="header-content">
+
+    <h1>Unified Application Portal</h1>
+
+    <p>All your favourite applications in one place</p>
+
+  </div>
+
+</header>
+
+
+
+<main role="main" id="folders-container" aria-label="Company folders and applications">
+
+
+
+<!-- HEISCO Folder -->
+
+<section class="folder" aria-label="HEISCO applications folder">
+
+  <img src="icons/heisco.png" alt="MIS icon" class="folder-icon" />
+
+  <div class="folder-label">HEISCO</div>
+
+  <div class="folder-apps" role="region" aria-label="HEISCO applications">
+
+    <a href="http://miserp.heisco.com:7777/forms/frmservlet?config=heisco_en" target="_blank" rel="noopener noreferrer" class="folder-app" aria-label="HEISCO MIS application">
+
+      <img src="icons/mis.png" alt="MIS icon" class="folder-app-icon" />
+
+      <span>MIS</span>
+
+    </a>
+
+
+
+    <a href="http://pmmsheisco.heisco.com/pmms/login.aspx" target="_blank" rel="noopener noreferrer" class="folder-app" aria-label="HEISCO PMMS application">
+
+      <img src="icons/pmms.png" alt="PMMS icon" class="folder-app-icon" />
+
+      <span>PMMS</span>
+
+    </a>
+
+  </div>
+
+</section>
+
+
+
+<!-- Gulf Dredging Folder -->
+
+<section class="folder" aria-label="Gulf Dredging applications folder">
+
+  <img src="icons/gd.png" alt="MIS icon" class="folder-icon" />
+
+  <div class="folder-label">Gulf Dredging</div>
+
+  <div class="folder-apps" role="region" aria-label="Gulf Dredging applications">
+
+    <a href="http://miserp.heisco.com:7777/forms/frmservlet?config=gdco_en" target="_blank" rel="noopener noreferrer" class="folder-app" aria-label="Gulf Dredging MIS application">
+
+      <img src="icons/mis.png" alt="MIS icon" class="folder-app-icon" />
+
+      <span>MIS</span>
+
+    </a>
+
+    <a href="http://pmmsgdc.heisco.com/pmms/login.aspx" target="_blank" rel="noopener noreferrer" class="folder-app" aria-label="Gulf Dredging PMMS application">
+
+      <img src="icons/pmms.png" alt="PMMS icon" class="folder-app-icon" />
+
+      <span>PMMS</span>
+
+    </a>
+
+  </div>
+
+</section>
+
+
+
+<!-- HEISCO RESOURCES Folder -->
+
+<section class="folder" aria-label="HEISCO RESOURCES applications folder">
+
+  <img src="icons/htco.jpg" alt="MIS icon" class="folder-icon" />
+
+  <div class="folder-label">HEISCO RESOURCES</div>
+
+  <div class="folder-apps" role="region" aria-label="HEISCO RESOURCES applications">
+
+    <a href="http://miserp.heisco.com:7777/forms/frmservlet?config=htsco_en" target="_blank" rel="noopener noreferrer" class="folder-app" aria-label="HEISCO RESOURCES MIS application">
+
+      <img src="icons/mis.png" alt="MIS icon" class="folder-app-icon" />
+
+      <span>MIS</span>
+
+    </a>
+
+    <a href="http://pmmsheiscoresources.heisco.com/pmms/login.aspx" target="_blank" rel="noopener noreferrer" class="folder-app" aria-label="HEISCO RESOURCES PMMS application">
+
+      <img src="icons/pmms.png" alt="PMMS icon" class="folder-app-icon" />
+
+      <span>PMMS</span>
+
+    </a>
+
+  </div>
+
+</section>
+
+
+
+<!-- HEISCO KSA Folder -->
+
+<section class="folder" aria-label="HEISCO KSA applications folder">
+
+  <img src="icons/heisco.png" alt="MIS icon" class="folder-icon" />
+
+  <div class="folder-label">HEISCO KSA</div>
+
+  <div class="folder-apps" role="region" aria-label="HEISCO KSA applications">
+
+    <a href="http://miserp.heisco.com:7777/forms/frmservlet?config=hsa_en" target="_blank" rel="noopener noreferrer" class="folder-app" aria-label="HEISCO KSA MIS application">
+
+      <img src="icons/mis.png" alt="MIS icon" class="folder-app-icon" />
+
+      <span>MIS</span>
+
+    </a>
+
+    <a href="http://pmmsheiscoksa.heisco.com/hksa/login.aspx" target="_blank" rel="noopener noreferrer" class="folder-app" aria-label="HEISCO KSA PMMS application">
+
+      <img src="icons/pmms.png" alt="PMMS icon" class="folder-app-icon" />
+
+      <span>PMMS</span>
+
+    </a>
+
+  </div>
+
+</section>
+
+
+
+<!-- GULFSKY KSA Folder -->
+
+<section class="folder" aria-label="GULFSKY KSA applications folder">
+
+  <img src="icons/gsf.png" alt="MIS icon" class="folder-icon" />
+
+  <div class="folder-label">GULFSKY KSA</div>
+
+  <div class="folder-apps" role="region" aria-label="GULFSKY KSA applications">
+
+    <a href="http://miserp.heisco.com:7777/forms/frmservlet?config=gulfsky_en" target="_blank" rel="noopener noreferrer" class="folder-app" aria-label="GULFSKY KSA MIS application">
+
+      <img src="icons/mis.png" alt="MIS icon" class="folder-app-icon" />
+
+      <span>MIS</span>
+
+    </a>
+
+    <a href="http://pmmsgsf.heisco.com/GSFKSA/login.aspx" target="_blank" rel="noopener noreferrer" class="folder-app" aria-label="GULFSKY KSA PMMS application">
+
+      <img src="icons/pmms.png" alt="PMMS icon" class="folder-app-icon" />
+
+      <span>PMMS</span>
+
+    </a>
+
+  </div>
+
+</section>
+
+</main>
+
+
+
+<section id="non-erp" aria-label="Non ERP Applications">
+
+  <div class="section-title">Non-ERP Applications</div>
+
+  <a href="http://edocs.heisco.com" target="_blank" rel="noopener noreferrer" class="app" aria-label="EDocs application">
+
+    <img src="icons/edocs.png" alt="EDocs icon" class="app-icon" />
+
+    <span>EDocs</span>
+
+  </a>
+
+  <a href="https://eportal.heisco.com:1443" target="_blank" rel="noopener noreferrer" class="app" aria-label="Eportal application">
+
+    <img src="icons/eportal.png" alt="Eportal icon" class="app-icon" />
+
+    <span>Eportal</span>
+
+  </a>
+
+  <a href="http://sermgr.heisco.com/ser/" target="_blank" rel="noopener noreferrer" class="app" aria-label="OSR application">
+
+    <img src="icons/osr.png" alt="OSR icon" class="app-icon" />
+
+    <span>Office Service Request</span>
+
+  </a>
+
+  <a href="http://salarycertificate.heisco.com/sal/" target="_blank" rel="noopener noreferrer" class="app" aria-label="SCR application">
+
+    <img src="icons/scr.png" alt="SCR icon" class="app-icon" />
+
+    <span>Salary Certificate Request</span>
+
+  </a>
+
+  <a href="http://ess.heisco.com/trf/" target="_blank" rel="noopener noreferrer" class="app" aria-label="TRF application">
+
+    <img src="icons/trf.png" alt="TRF icon" class="app-icon" />
+
+    <span>Training Request Form</span>
+
+  </a>
+
+  <a href="https://mail.heisco.com" target="_blank" rel="noopener noreferrer" class="app" aria-label="WebMail application">
+
+    <img src="icons/webmail.png" alt="WebMail icon" class="app-icon" />
+
+    <span>WebMail</span>
+
+  </a>
+
+</section>
+
+
+
+<script>
+
+  const images = ['1.jpg','2.jpg','3.jpg','4.jpg','5.jpg'];
+
+  const carousel = document.getElementById('background-carousel');
+
+  let currentIndex = 0;
+
+  images.forEach((img,i)=>{
+
+    const d = document.createElement('div');
+
+    d.className = 'bg-slide';
+
+    d.style.backgroundImage = `url('${img}')`;
+
+    if(i===0) d.classList.add('active');
+
+    carousel.appendChild(d);
+
+  });
+
+  const slides = carousel.querySelectorAll('.bg-slide');
+
+  setInterval(()=> {
+
+    slides[currentIndex].classList.remove('active');
+
+    currentIndex = (currentIndex+1) % slides.length;
+
+    slides[currentIndex].classList.add('active');
+
+  }, 8000);
+
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    // Select all folder and app elements
+    const folders = document.querySelectorAll('.folder');
+    const apps = document.querySelectorAll('#non-erp a.app');
+
+    // Combine NodeLists into an array
+    const elements = [...folders, ...apps];
+
+    // Add the initial animation class to each element
+    elements.forEach(el => el.classList.add('fade-slide-up'));
+
+    // Trigger animation with staggered delays
+    elements.forEach((el, i) => {
+      setTimeout(() => {
+        el.classList.add('visible');
+      }, i * 150); // 150ms stagger between items
+    });
+  });
+</script>
+
+
+</body>
+
+</html>
